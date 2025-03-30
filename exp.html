@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expense Tracker</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background: linear-gradient(135deg, #17e0d0, #81c9e7);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            color: white;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            max-width: 400px;
+            width: 90%;
+            color: black;
+        }
+        input, button {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+        button {
+            background: #dd70d4;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #e993dd;
+        }
+        .transactions {
+            list-style: none;
+            padding: 0;
+        }
+        .transactions li {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+        }
+        .transactions .income { color: green; }
+        .transactions .expense { color: red; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Expense Tracker</h2>
+        <input type="text" id="description" placeholder="Enter description">
+        <input type="number" id="amount" placeholder="Enter amount">
+        <button onclick="addTransaction()">Add Transaction</button>
+        <ul class="transactions" id="transactionList"></ul>
+    </div>
+
+    <script>
+        let transactions = JSON.parse(localStorage.getItem("transactions")) || [];
+
+        function updateUI() {
+            const list = document.getElementById("transactionList");
+            list.innerHTML = "";
+            transactions.forEach((transaction, index) => {
+                const li = document.createElement("li");
+                li.classList.add(transaction.amount > 0 ? "income" : "expense");
+                li.innerHTML = `${transaction.description}: $${transaction.amount} <span onclick='deleteTransaction(${index})' style='cursor:pointer;color:red;'>X</span>`;
+                list.appendChild(li);
+            });
+        }
+
+        function addTransaction() {
+            const description = document.getElementById("description").value;
+            const amount = parseFloat(document.getElementById("amount").value);
+            if (!description || isNaN(amount)) return alert("Enter valid details");
+            transactions.push({ description, amount });
+            localStorage.setItem("transactions", JSON.stringify(transactions));
+            document.getElementById("description").value = "";
+            document.getElementById("amount").value = "";
+            updateUI();
+        }
+
+        function deleteTransaction(index) {
+            transactions.splice(index, 1);
+            localStorage.setItem("transactions", JSON.stringify(transactions));
+            updateUI();
+        }
+
+        updateUI();
+    </script>
+</body>
+</html>
